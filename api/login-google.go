@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -27,8 +26,7 @@ func LoginGoogle(w http.ResponseWriter, r *http.Request) {
 	// Get URL param "code"
 	keys, ok := r.URL.Query()["code"]
 	if !ok || len(keys[0]) < 1 {
-		log.Println("URL param 'code' is missing")
-		return
+		fmt.Fprintf(w, "URL param 'code' is missing")
 	}
 	key := keys[0]
 	access_token := getToken(key)
@@ -39,7 +37,7 @@ func LoginGoogle(w http.ResponseWriter, r *http.Request) {
 	// Connect database
 	client, cancel, err := connectDatabase()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(w, err.Error())
 	}
 	defer cancel()
 	collection := client.Database(DB_NAME).Collection(DB_COLLECTION)
@@ -49,7 +47,7 @@ func LoginGoogle(w http.ResponseWriter, r *http.Request) {
 		"email": user_info["email"],
 	})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(w, err.Error())
 	}
 }
 
@@ -64,7 +62,7 @@ func getToken(code string) string {
 	resp, err := http.PostForm(GOOGLE_LINK_GET_TOKEN, data)
 
 	if err != nil {
-		log.Fatal(err)
+		return ""
 	}
 
 	var res map[string]interface{}
@@ -79,13 +77,13 @@ func getUserInfo(access_token string) map[string]interface{} {
 	resp, err := http.Get(link)
 
 	if err != nil {
-		log.Fatal(err)
+		return map[string]interface{}{}
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return map[string]interface{}{}
 	}
 
 	r := bytes.NewReader(body)
