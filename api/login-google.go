@@ -34,21 +34,26 @@ func LoginGoogle(w http.ResponseWriter, r *http.Request) {
 	var user_info map[string]interface{}
 	user_info = getUserInfo(access_token)
 
-	// Connect database
-	client, cancel, err := connectDatabase()
-	if err != nil {
-		fmt.Fprintf(w, err.Error())
-	}
-	defer cancel()
-	collection := client.Database(DB_NAME).Collection(DB_COLLECTION)
-	_, err = collection.InsertOne(context.TODO(), map[string]interface{}{
+	// // Connect database
+	// client, cancel, err := connectDatabase()
+	// if err != nil {
+	// 	fmt.Fprintf(w, err.Error())
+	// }
+	// defer cancel()
+	// collection := client.Database(DB_NAME).Collection(DB_COLLECTION)
+	// _, err = collection.InsertOne(context.TODO(), map[string]interface{}{
+	// 	"id":    user_info["id"],
+	// 	"name":  user_info["name"],
+	// 	"email": user_info["email"],
+	// })
+	// if err != nil {
+	// 	fmt.Fprintf(w, err.Error())
+	// }
+	fmt.Fprintf(w, fmt.Sprintf("%v", map[string]interface{}{
 		"id":    user_info["id"],
 		"name":  user_info["name"],
 		"email": user_info["email"],
-	})
-	if err != nil {
-		fmt.Fprintf(w, err.Error())
-	}
+	}))
 }
 
 func getToken(code string) string {
