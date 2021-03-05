@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -19,7 +20,7 @@ const GOOGLE_CLIENT_ID = "617831923199-ha6054jhlqqkrioohv5fioo5m5f10iki.apps.goo
 const GOOGLE_CLIENT_SECRET = "wtgMIEiAt5UGKjg3BiBNCIf5"
 const GOOGLE_REDIRECT_URI = "https://authenticationapp-ngosangns.vercel.app/api/login-google"
 const GOOGLE_LINK_GET_TOKEN = "https://accounts.google.com/o/oauth2/token"
-const GOOGLE_LINK_GET_USER_INFO = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="
+const GOOGLE_LINK_GET_USER_INFO = "https://www.googleapis.com/oauth2/v2/userinfo?alt=json&access_token="
 const GOOGLE_GRANT_TYPE = "authorization_code"
 
 func LoginGoogle(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +64,7 @@ func getToken(code string) string {
 		"redirect_uri":  {GOOGLE_REDIRECT_URI},
 		"code":          {code},
 		"grant_type":    {GOOGLE_GRANT_TYPE},
+		"scope":         {"['profile']"},
 	}
 	resp, err := http.PostForm(GOOGLE_LINK_GET_TOKEN, data)
 
@@ -82,18 +84,21 @@ func getUserInfo(access_token string) map[string]interface{} {
 	resp, err := http.Get(link)
 
 	if err != nil {
+		log.Println("Error while requesting")
 		return map[string]interface{}{}
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		log.Println("Error while requesting")
 		return map[string]interface{}{}
 	}
 
 	r := bytes.NewReader(body)
 	var res map[string]interface{}
 	json.NewDecoder(r).Decode(&res)
+	log.Println(res)
 	return res
 }
 
