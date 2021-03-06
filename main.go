@@ -9,5 +9,6 @@ import (
 func main() {
 	http.HandleFunc("/api/date", api.Date)
 	http.HandleFunc("/api/login-google", api.LoginGoogle)
+	http.HandleFunc("/api/db", api.Db)
 	http.ListenAndServe(":8080", nil)
 }

@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Date handler
 func Date(w http.ResponseWriter, r *http.Request) {
 	currentTime := time.Now().Format(time.RFC850)
 	fmt.Fprintf(w, currentTime)

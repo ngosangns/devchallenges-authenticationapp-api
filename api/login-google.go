@@ -1,8 +1,7 @@
-package handler
+package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,10 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const GOOGLE_CLIENT_ID = "617831923199-ha6054jhlqqkrioohv5fioo5m5f10iki.apps.googleusercontent.com"
@@ -23,10 +18,7 @@ const GOOGLE_LINK_GET_TOKEN = "https://accounts.google.com/o/oauth2/token"
 const GOOGLE_LINK_GET_USER_INFO = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="
 const GOOGLE_GRANT_TYPE = "authorization_code"
 
-const DB_NAME = "ngosangns"
-const DB_COLLECTION = "authenicationapp"
-const DB_CONNECT_STRING = "mongodb+srv://ngosangns:jikmli@cluster0.oxs6m.mongodb.net/ngosangns?retryWrites=true&w=majority"
-
+// LoginGoogle handler
 func LoginGoogle(w http.ResponseWriter, r *http.Request) {
 	// Get URL param "code"
 	keys, ok := r.URL.Query()["code"]
@@ -39,21 +31,6 @@ func LoginGoogle(w http.ResponseWriter, r *http.Request) {
 	var user_info map[string]interface{}
 	user_info = getUserInfo(access_token)
 
-	// // Connect database
-	// client, cancel, err := connectDatabase()
-	// if err != nil {
-	// 	fmt.Fprintf(w, err.Error())
-	// }
-	// defer cancel()
-	// collection := client.Database(DB_NAME).Collection(DB_COLLECTION)
-	// _, err = collection.InsertOne(context.TODO(), map[string]interface{}{
-	// 	"id":    user_info["id"],
-	// 	"name":  user_info["name"],
-	// 	"email": user_info["email"],
-	// })
-	// if err != nil {
-	// 	fmt.Fprintf(w, err.Error())
-	// }
 	fmt.Fprintf(w, fmt.Sprintf("%v", map[string]interface{}{
 		"id":    user_info["id"],
 		"name":  user_info["name"],
@@ -102,17 +79,4 @@ func getUserInfo(access_token string) map[string]interface{} {
 	var res map[string]interface{}
 	json.NewDecoder(r).Decode(&res)
 	return res
-}
-
-func connectDatabase() (*mongo.Client, context.CancelFunc, error) {
-	// Connect
-	client, err := mongo.NewClient(options.Client().ApplyURI(DB_CONNECT_STRING))
-	if err != nil {
-		return nil, nil, err
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	if err := client.Connect(ctx); err != nil {
-		return nil, cancel, err
-	}
-	return client, cancel, nil
 }
