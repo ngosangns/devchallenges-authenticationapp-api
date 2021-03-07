@@ -10,5 +10,7 @@ func main() {
 	http.HandleFunc("/api/date", api.Date)
 	http.HandleFunc("/api/login-google", api.LoginGoogle)
 	http.HandleFunc("/api/db", api.Db)
+	http.HandleFunc("/api/signup", api.Signup)
+	http.HandleFunc("/api/login", api.Login)
 	http.ListenAndServe(":8080", nil)
 }

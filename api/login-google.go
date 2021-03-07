@@ -11,12 +11,12 @@ import (
 	"strings"
 )
 
-const GOOGLE_CLIENT_ID = "617831923199-ha6054jhlqqkrioohv5fioo5m5f10iki.apps.googleusercontent.com"
-const GOOGLE_CLIENT_SECRET = "wtgMIEiAt5UGKjg3BiBNCIf5"
-const GOOGLE_REDIRECT_URI = "http://localhost:8080/api/login-google"
-const GOOGLE_LINK_GET_TOKEN = "https://accounts.google.com/o/oauth2/token"
-const GOOGLE_LINK_GET_USER_INFO = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="
-const GOOGLE_GRANT_TYPE = "authorization_code"
+const googleClientID = "617831923199-ha6054jhlqqkrioohv5fioo5m5f10iki.apps.googleusercontent.com"
+const googleClientSecret = "wtgMIEiAt5UGKjg3BiBNCIf5"
+const googleRedirectURL = "http://localhost:8080/api/login-google"
+const googleLinkGetToken = "https://accounts.google.com/o/oauth2/token"
+const googleLinkGetUserInfo = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="
+const googleGrantType = "authorization_code"
 
 // LoginGoogle handler
 func LoginGoogle(w http.ResponseWriter, r *http.Request) {
@@ -26,27 +26,27 @@ func LoginGoogle(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "URL param 'code' is missing")
 	}
 	key := keys[0]
-	access_token := getToken(key)
+	accessToken := getToken(key)
 
-	var user_info map[string]interface{}
-	user_info = getUserInfo(access_token)
+	var userInfo map[string]interface{}
+	userInfo = getUserInfo(accessToken)
 
 	fmt.Fprintf(w, fmt.Sprintf("%v", map[string]interface{}{
-		"id":    user_info["id"],
-		"name":  user_info["name"],
-		"email": user_info["email"],
+		"id":    userInfo["id"],
+		"name":  userInfo["name"],
+		"email": userInfo["email"],
 	}))
 }
 
 func getToken(code string) string {
 	data := url.Values{
-		"client_id":     {GOOGLE_CLIENT_ID},
-		"client_secret": {GOOGLE_CLIENT_SECRET},
-		"redirect_uri":  {GOOGLE_REDIRECT_URI},
+		"client_id":     {googleClientID},
+		"client_secret": {googleClientSecret},
+		"redirect_uri":  {googleRedirectURL},
 		"code":          {code},
-		"grant_type":    {GOOGLE_GRANT_TYPE},
+		"grant_type":    {googleGrantType},
 	}
-	resp, err := http.PostForm(GOOGLE_LINK_GET_TOKEN, data)
+	resp, err := http.PostForm(googleLinkGetToken, data)
 
 	if err != nil {
 		return ""
@@ -54,13 +54,13 @@ func getToken(code string) string {
 
 	var res map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&res)
-	access_token := fmt.Sprintf("%v", res["access_token"])
-	access_token = strings.ReplaceAll(access_token, "\"", "")
-	return access_token
+	accessToken := fmt.Sprintf("%v", res["access_token"])
+	accessToken = strings.ReplaceAll(accessToken, "\"", "")
+	return accessToken
 }
 
-func getUserInfo(access_token string) map[string]interface{} {
-	link := GOOGLE_LINK_GET_USER_INFO + access_token
+func getUserInfo(accessToken string) map[string]interface{} {
+	link := googleLinkGetUserInfo + accessToken
 	resp, err := http.Get(link)
 
 	if err != nil {
