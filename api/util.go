@@ -5,6 +5,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,11 @@ import (
 
 	models "github.com/ngosangns/devchallenges-my-unsplash-api/models"
 )
+
+// Util handler
+func Util(w http.ResponseWriter, r *http.Request) {
+	printErr(w, errors.New("404 Not found"))
+}
 
 func printErr(w http.ResponseWriter, err error) {
 	// Print log
