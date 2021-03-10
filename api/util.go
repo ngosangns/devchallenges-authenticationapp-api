@@ -19,6 +19,10 @@ func Util(w http.ResponseWriter, r *http.Request) {
 	printErr(w, errors.New("404 Not found"))
 }
 
+func printRes(w http.ResponseWriter, res []byte) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Write(res)
+}
 func printErr(w http.ResponseWriter, err error) {
 	// Print log
 	log.Println(err)

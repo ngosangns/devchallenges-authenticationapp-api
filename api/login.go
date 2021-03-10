@@ -51,7 +51,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 							"token": jwt,
 						},
 					})
-					w.Write(b)
+					printRes(w, b)
 				} else { // If token doesn't exist then create a new one
 					// Create jwt token
 					jwt, key := createToken(rec)
@@ -75,7 +75,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 							"token": token.JWT,
 						},
 					})
-					w.Write(b)
+					printRes(w, b)
 				}
 
 				return
@@ -85,6 +85,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			Status:  false,
 			Message: "Failed",
 		})
-		w.Write(b)
+		printRes(w, b)
 	}
 }
