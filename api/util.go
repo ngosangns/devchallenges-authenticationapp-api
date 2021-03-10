@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"time"
 
 	models "github.com/ngosangns/devchallenges-my-unsplash-api/models"
@@ -16,21 +17,27 @@ import (
 
 // Util handler
 func Util(w http.ResponseWriter, r *http.Request) {
-	printErr(w, errors.New("404 Not found"))
+	printErr(w, errors.New("404 Not found"), "")
 }
 
 func printRes(w http.ResponseWriter, res []byte) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(res)
 }
-func printErr(w http.ResponseWriter, err error) {
+
+func printErr(w http.ResponseWriter, err error, clientErr string) {
 	// Print log
 	log.Println(err)
+	// Set client message
+	if clientErr == "" {
+		clientErr = err.Error()
+	}
 	// Print response
 	b, _ := json.Marshal(models.Res{
 		Status:  false,
-		Message: err.Error(),
+		Message: clientErr,
 	})
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(b)
 }
 
@@ -50,4 +57,9 @@ func createToken(user models.User) (string, string) {
 
 func b64Encode(str string) string {
 	return b64.StdEncoding.EncodeToString([]byte(str))
+}
+
+func regEx(str string, pattern string) bool {
+	match, _ := regexp.MatchString(pattern, str)
+	return match
 }
