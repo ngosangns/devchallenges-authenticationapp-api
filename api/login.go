@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"time"
@@ -11,16 +10,18 @@ import (
 
 // Login handler
 func Login(w http.ResponseWriter, r *http.Request) {
+	// Enable CORS
+	setHeader(w, r)
+
 	if r.Method == "POST" {
 		var rec models.User
-
 		rec.Email = r.FormValue("email")
-		rec.Password = r.FormValue("password")
+		rec.Password = r.Form.Get("password")
 
 		// Validate
-		emailPattern := "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])"
+		emailPattern := `^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`
 		if !regEx(rec.Email, emailPattern) {
-			printErr(w, errors.New("Email doesn't match pattern"), "")
+			printErr(w, errors.New("Email doesn't match pattern: "+rec.Email), "")
 			return
 		}
 
@@ -53,13 +54,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 					// Write token to response
-					b, _ := json.Marshal(models.Res{
-						Status: true,
-						Message: map[string]interface{}{
-							"token": jwt,
-						},
+					printRes(w, map[string]interface{}{
+						"token": jwt,
 					})
-					printRes(w, b)
 				} else { // If token doesn't exist then create a new one
 					// Create jwt token
 					jwt, key := createToken(rec)
@@ -77,21 +74,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 					// Write token to response
-					b, _ := json.Marshal(models.Res{
-						Status: true,
-						Message: map[string]interface{}{
-							"token": token.JWT,
-						},
+					printRes(w, map[string]interface{}{
+						"token": token.JWT,
 					})
-					printRes(w, b)
 				}
-				return
+			} else {
+				printErr(w, errors.New("Wrong password"), "")
 			}
+			return
 		}
-		b, _ := json.Marshal(models.Res{
-			Status:  false,
-			Message: "Account doesn't exist",
-		})
-		printRes(w, b)
+		printErr(w, errors.New("Account doesn't exist"), "")
 	}
 }
