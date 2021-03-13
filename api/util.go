@@ -35,7 +35,7 @@ func printRes(w http.ResponseWriter, res interface{}) {
 		Message: res,
 	})
 	if err != nil {
-		printErr(w, err, "")
+		printErr(w, err, "Error")
 	}
 	w.Write(resJSON)
 }
