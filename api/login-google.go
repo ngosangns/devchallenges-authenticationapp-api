@@ -17,7 +17,7 @@ import (
 
 const googleClientID = "617831923199-ha6054jhlqqkrioohv5fioo5m5f10iki.apps.googleusercontent.com"
 const googleClientSecret = "wtgMIEiAt5UGKjg3BiBNCIf5"
-const googleRedirectURL = "http://localhost:3000/login-google"
+const googleRedirectURL = "https://ngosangns-authapp.web.app/login-google"
 const googleLinkGetToken = "https://accounts.google.com/o/oauth2/token"
 const googleLinkGetUserInfo = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="
 const googleGrantType = "authorization_code"
