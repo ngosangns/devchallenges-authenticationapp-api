@@ -12,6 +12,9 @@ import (
 func Login(w http.ResponseWriter, r *http.Request) {
 	// Enable CORS
 	setHeader(w, r)
+	if r.Method == "OPTIONS" {
+		return
+	}
 
 	if r.Method == "POST" {
 		var rec models.User
@@ -21,7 +24,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		// Validate
 		emailPattern := `^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`
 		if !regEx(rec.Email, emailPattern) {
-			printErr(w, errors.New("Email doesn't match pattern: "+rec.Email), "")
+			printErr(w, errors.New("Email doesn't match pattern"), "")
 			return
 		}
 
