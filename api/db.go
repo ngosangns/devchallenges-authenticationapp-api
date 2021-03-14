@@ -64,7 +64,7 @@ func connectDb() (*firestore.Client, context.Context, error) {
 
 // // MongoDB
 // const dbName = "ngosangns"
-// const dbCollection = "authenicationapp"
+// const dbCollection = "authenticationapp"
 // const dbConnectString = "mongodb+srv://ngosangns:jikmli@cluster0.oxs6m.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 // // Db Handler
 // func Db(w http.ResponseWriter, r *http.Request) {
