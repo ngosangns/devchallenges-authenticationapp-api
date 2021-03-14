@@ -103,6 +103,7 @@ func LoginGoogle(w http.ResponseWriter, r *http.Request) {
 	} else { // If account doesn't exists
 		rec := models.User{
 			Email: fmt.Sprintf("%v", userInfo["email"]),
+			Name:  fmt.Sprintf("%v", userInfo["name"]),
 		}
 		// Add new user
 		_, _, err = client.Collection("users").Add(ctx, rec)
