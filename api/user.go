@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ngosangns/devchallenges-my-unsplash-api/models"
@@ -117,6 +118,11 @@ func User(w http.ResponseWriter, r *http.Request) {
 			arr, _ := iter1.GetAll()
 			// If account exist
 			if len(arr) > 0 {
+				// Check upload password
+				if rec.Password == "" {
+					recordPassword, _ := arr[0].DataAt("password")
+					rec.Password = fmt.Sprintf("%v", recordPassword)
+				}
 				// Update account info
 				_, err := client.Collection("users").Doc(arr[0].Ref.ID).Set(ctx, rec)
 				if err != nil {
